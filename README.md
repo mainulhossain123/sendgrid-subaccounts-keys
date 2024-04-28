@@ -40,6 +40,7 @@ sendgrid_api_key = 'YOUR_API_KEY'
 
 ### Adjusting Chunk Size
 You can also adjust the **chunk_size** value to allow to retrieve a larger chunk of data depending on the scale of the database you wish to retrieve as well as the capabilities of your machine.
+```python
 #Create threads for fetching API keys concurrently
         threads = []
         result_list = []
@@ -49,7 +50,7 @@ You can also adjust the **chunk_size** value to allow to retrieve a larger chunk
             thread = threading.Thread(target=fetch_api_keys, args=(chunk, result_list))
             threads.append(thread)
             thread.start()
-
+```
 ### CSV File
 The data will be saved in a CSV file **sendgrid_subaccounts.csv**, which you can change to your desire and also include a path for saving if you wish but by default the file will be saved in the IDE Directory folder. 
             
