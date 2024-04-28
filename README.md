@@ -51,6 +51,28 @@ You can also adjust the **chunk_size** value to allow to retrieve a larger chunk
             threads.append(thread)
             thread.start()
 ```
+
+### Adjusting Page Size
+You can also adjust the **page_size** value for the number of data you wish for each paginated results to retrieve. This value will defer from case to case and you may need to do trial and error for finding the perfect sweet spot but I recommend on average starting with 100 pages and increasing the number upwards until diminishing returns on processing speed.
+```python
+# Function to fetch SendGrid subaccounts with pagination
+def get_sendgrid_subaccounts(page=1, page_size=1000): #Page size adjust according to you requirements
+    try:
+        headers = {
+            'Authorization': f'Bearer {sendgrid_api_key}'
+        }
+        params = {
+            'limit': page_size,
+            'offset': (page - 1) * page_size
+        }
+        response = requests.get(sendgrid_subaccounts_url, headers=headers, params=params)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        print("Error fetching SendGrid subaccounts:", e)
+        return None
+```
+
 ### CSV File
 The data will be saved in a CSV file **sendgrid_subaccounts.csv**, which you can change to your desire and also include a path for saving if you wish but by default the file will be saved in the IDE Directory folder. 
             
