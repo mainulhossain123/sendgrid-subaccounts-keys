@@ -22,7 +22,8 @@ The Script uses the following:
 - *[Sendgrid V3 API On-Behalf-Of](https://docs.sendgrid.com/api-reference/how-to-use-the-sendgrid-v3-api/on-behalf-of)* as the endpoint for making api endpoint calls for each subaccount on behalf of the parent account to allow GET requests access to each subaccount.
 - *[Sendgrid V3 API Keys](https://docs.sendgrid.com/api-reference/api-keys/retrieve-an-existing-api-key)* the endpoint for making GET calls to each individual subaccount for retrieving any API Keys that they may have generated in their account.
 - *[Requests Module](https://pypi.org/project/requests/)* allows us to make HTTP/1.1 request calls.
-- *[Threading Module](https://docs.python.org/3/library/threading.html)* is used to allow us to make multiple parallel API calls using multi-threading of the computation devicem in order to retrieve multiple API Keys simuoultaneously to increase efficiency. **Note** concurrent.futures.ThreadPoolExecutor module can also be used in place here for increasing if you wish for a higher level of control and wish to push tasks to background threads, which will increase process time a bit but put less stress on the machine.  
+- *[Threading Module](https://docs.python.org/3/library/threading.html)* is used to allow us to make multiple parallel API calls using multi-threading of the computation device in order to retrieve multiple API Keys simuoultaneously to increase efficiency.
+**Note** concurrent.futures.ThreadPoolExecutor module can also be used in place here for increasing if you wish for a higher level of control and wish to push tasks to background threads, which will increase process time a bit but put less stress on the machine.  
 -  *[CSV Module](https://docs.python.org/3/library/csv.html)* allows us to write or read CSV files, in this case write all retrieved data to a CSV file.
 
 ## Legal
