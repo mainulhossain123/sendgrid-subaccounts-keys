@@ -1,79 +1,117 @@
-# Sendgrid_Subaccounts_API_Keys_Extraction
-Ready-to-use Python Script for Extracting all Subaccounts API Keys under Parent SendGrid Account.
+# 🔐 SendGrid Subaccount API Key Exporter
+This Python script retrieves all subaccounts under a SendGrid parent account and exports their associated API keys to a structured CSV file. It is designed for enterprise use cases such as audits, compliance reviews, access management, and automated reporting.
+---
+## 🚀 Key Features
+* ✅ Authenticates using a parent-level SendGrid API key
 
-## Note
-The code, in its current stage is for downloading only subaccount API keys and wrtiting them to a CSV file, if you wish the code can be configured to bring any information you wish that the API call might include during extraction, such as dedicated IP Addresses of each subaccount.
+* 🔄 Handles pagination automatically to retrieve all subaccounts
 
-## Prerequisites 
-* **Python 3.12 or higher**. Download it from https://www.python.org/downloads/
-* **IDE** - I personally used Visual Studio Code but it is upto your preference.
-* **Libraries - Requests**: Run in Terminal of enviornment or in command prompt **pip install requests**
-* **Libraries - Threading**: Run in Terminal of enviornment or in command prompt **pip install threading**
-* **Libraries - CSV**: Run in Terminal of enviornment or in command prompt **pip install csv**
-* **SendGrid API Key**. You must have the API key enabled with minimum Read permissions from your Sendgrid Parent account.
+* ⚡ Fetches API keys for each subaccount concurrently using threads
 
-## Languages, Frameworks and API calls used in the script
-The Script uses the following:
+* 📁 Outputs to a clean CSV format with subaccount-level granularity
 
-- *[Python 3.12.3](https://www.python.org/downloads/release/python-3123/)* as the primary Programming Language.
-- *[Visual Studio Code](https://code.visualstudio.com/download)* as the IDE.
-- *[Sendgrid V3 API](https://docs.sendgrid.com/api-reference/how-to-use-the-sendgrid-v3-api/authentication)* as the primary endpoint for primary Authorization header.
-- *[Sendgrid V3 API Subusers](https://docs.sendgrid.com/api-reference/subusers-api/list-all-subusers)* as secondary API endpoint for listing all subuser accounts in the parent account. The same endpoint also contains offset and limit parameters for generating **paginated** results, all subuser accounts.
-- *[Sendgrid V3 API On-Behalf-Of](https://docs.sendgrid.com/api-reference/how-to-use-the-sendgrid-v3-api/on-behalf-of)* as the endpoint for making api endpoint calls for each subaccount on behalf of the parent account to allow GET requests access to each subaccount.
-- *[Sendgrid V3 API Keys](https://docs.sendgrid.com/api-reference/api-keys/retrieve-an-existing-api-key)* the endpoint for making GET calls to each individual subaccount for retrieving any API Keys that they may have generated in their account.
-- *[Requests Module](https://pypi.org/project/requests/)* allows us to make HTTP/1.1 request calls.
-- *[Threading Module](https://docs.python.org/3/library/threading.html)* is used to allow us to make multiple parallel API calls using multi-threading of the computation device in order to retrieve multiple API Keys simuoultaneously to increase efficiency.
-**Note** concurrent.futures.ThreadPoolExecutor module can also be used in place here for increasing if you wish for a higher level of control and wish to push tasks to background threads, which will increase process time a bit but put less stress on the machine.  
--  *[CSV Module](https://docs.python.org/3/library/csv.html)* allows us to write or read CSV files, in this case write all retrieved data to a CSV file.
+* 🛡️ Built-in error handling for network/API errors and permission issues
 
-## Legal
-* This code is in no way affiliated with, authorized, maintained, sponsored or endorsed by Sendgrid or any of its affiliates or subsidiaries. This is an independent and unofficial software. Use at your own risk. Commercial use of this code/repo is strictly prohibited.
+---
 
-## Basic Usage
+## 🔧 Prerequisites
+- Python 3.7+
 
-### API_Key Replacement
-Simply replace the value in **sendgrid_api_key** with your own API key and run the script. 
+- requests module (install with pip install requests)
 
-#Set your SendGrid API key
-```
-sendgrid_api_key = 'YOUR_API_KEY'
-```
+---
 
-### Adjusting Chunk Size
-You can also adjust the **chunk_size** value to allow to retrieve a larger chunk of data depending on the scale of the database you wish to retrieve as well as the capabilities of your machine.
-```python
-#Create threads for fetching API keys concurrently
-        threads = []
-        result_list = []
-        chunk_size = 20  # Adjust the chunk size based on your requirements
-        for i in range(0, len(all_subaccounts), chunk_size):
-            chunk = all_subaccounts[i:i+chunk_size]
-            thread = threading.Thread(target=fetch_api_keys, args=(chunk, result_list))
-            threads.append(thread)
-            thread.start()
+## 🔐 Authentication
+The script requires a parent SendGrid API key with permission to:
+
+- List all subusers (GET /v3/subusers)
+
+- Impersonate subaccounts (on-behalf-of header)
+
+- List API keys under each subaccount (GET /v3/api_keys)
+
+--- 
+
+## 🧪 Environment Variables
+Before running the script, ensure the following environment variable is set:
+
+| Variable           | Description             | Required |
+| ------------------ | ----------------------- | -------- |
+| `SENDGRID_API_KEY` | Parent SendGrid API key | ✅ Yes    |
+
+You can export it in your shell or load from a .env file:
+```bash
+export SENDGRID_API_KEY='your_sendgrid_parent_api_key'
 ```
 
-### Adjusting Page Size
-You can also adjust the **page_size** value for the number of data you wish for each paginated results to retrieve. This value will defer from case to case and you may need to do trial and error for finding the perfect sweet spot but I recommend on average starting with 100 pages and increasing the number upwards until diminishing returns on processing speed.
-```python
-# Function to fetch SendGrid subaccounts with pagination
-def get_sendgrid_subaccounts(page=1, page_size=1000): #Page size adjust according to you requirements
-    try:
-        headers = {
-            'Authorization': f'Bearer {sendgrid_api_key}'
-        }
-        params = {
-            'limit': page_size,
-            'offset': (page - 1) * page_size
-        }
-        response = requests.get(sendgrid_subaccounts_url, headers=headers, params=params)
-        response.raise_for_status()
-        return response.json()
-    except Exception as e:
-        print("Error fetching SendGrid subaccounts:", e)
-        return None
+## 📦 Usage
+🖥️ Run the Script
+```bash
+python sendgrid_subaccount_export.py
 ```
+Upon execution, the script will:
 
-### CSV File
-The data will be saved in a CSV file **sendgrid_subaccounts.csv**, which you can change to your desire and also include a path for saving if you wish but by default the file will be saved in the IDE Directory folder. 
-            
+1. Fetch all SendGrid subaccounts.
+
+2. Retrieve API keys for each subaccount in parallel.
+
+3. Write results to sendgrid_subaccounts.csv.
+
+---
+
+📄 Output
+The output file is named:
+```bash
+sendgrid_subaccounts.csv
+```
+Example CSV Structure:
+| Subaccount Username | API Key ID                           | API Key Name    |
+| ------------------- | ------------------------------------ | --------------- |
+| client\_a           | 1e3a4f90-8f2b-4374-bdd4-abc123def456 | production\_key |
+| client\_b           | No API keys found                    |                 |
+
+---
+## ⚙️ Performance & Scalability
+- Uses multithreading for API key fetching to minimize latency.
+
+- Adjustable chunk_size to control concurrency.
+
+- Suitable for handling hundreds or thousands of subaccounts.
+
+## 🛑 Error Handling
+- Retries and fallbacks are built-in to gracefully handle:
+
+     - API throttling
+
+     - Subaccount permission issues
+
+     - Network interruptions
+
+If any subaccount fails to return API keys, it is recorded with "No API keys found".
+
+---
+
+## 🐳 Containerization Ready
+This script relies only on environment variables and writes to the local directory—making it fully compatible with Docker containers or CI/CD pipelines.
+
+## 📌 Notes
+- API keys are sensitive credentials. Use access-controlled environments and rotate API keys regularly.
+
+- SendGrid may enforce rate limits; consider spacing out requests or increasing chunk size if needed.
+
+- API key details are limited to ID and Name. Secret values are not accessible via the API.
+
+## 🤝 Contributing
+Pull requests are welcome. For major changes:
+* Fork the repo
+* Create a feature branch
+* Test your changes
+* ubmit a PR with context
+
+## 📝 License
+This project is licensed under the MIT License
+
+## 📬 Contact
+For issues, questions, or feature requests, please contact:
+Author: Mainul Hossain
+Email: hossainmainul83@gmail.com
