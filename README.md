@@ -1,4 +1,5 @@
 # 🔐 SendGrid Subaccount API Key Exporter
+
 This Python script retrieves all subaccounts under a SendGrid parent account and exports their associated API keys to a structured CSV file. It is designed for enterprise use cases such as audits, compliance reviews, access management, and automated reporting.
 ---
 ## 🚀 Key Features
